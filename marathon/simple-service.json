@@ -1,0 +1,35 @@
+{
+	"id": "simple-service",
+	"cmd": null,
+	"args": [],
+	"container": {
+		"type": "DOCKER",
+		"docker": {
+			"image": "docker.mycompany.com/springboot-mesos-marathon-keycloak-openldap:1.0.0",
+			"network": "BRIDGE",
+			"portMappings": [
+				{
+					"containerPort": 8080,
+					"hostPort": 0
+				}
+			]
+		}
+	},
+	"cpus": 0.2,
+	"mem": 1024,
+	"instances": 1,
+	"env": {
+		"keycloak.auth-server-url": "http://127.0.0.1:30000/auth"
+	},
+	"healthChecks": [
+		{
+			"protocol": "COMMAND",
+			"command": {
+				"value": "wget -O- --save-headers --content-on-error --timeout=60 http://localhost:8080/health"
+			},
+			"maxConsecutiveFailures": 3,
+			"gracePeriodSeconds": 360,
+			"intervalSeconds": 40
+		}
+	]
+}

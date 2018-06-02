@@ -1,0 +1,110 @@
+version: '3.5'
+services:
+
+  zookeeper:
+    container_name: zookeeper
+    image: zookeeper:3.5
+    ports:
+      - 2181:2181
+    healthcheck:
+      test: "nc -z -v localhost 2181"
+      start_period: 10s
+  
+  mesos-master:
+    container_name: mesos-master
+    image: mesosphere/mesos-master:1.5.0
+    privileged: true
+    environment:
+      - MESOS_HOSTNAME=$HOST_IP_ADDR
+      - MESOS_CLUSTER=SMACK
+      - MESOS_QUORUM=1
+      - MESOS_ZK=zk://zookeeper:2181/mesos
+      - MESOS_LOG_DIR=/tmp/mesos/logs
+    links:
+      - zookeeper
+    ports:
+      - 5050:5050
+    healthcheck:
+      test: "curl -f http://localhost:5050/health || exit 1"
+      start_period: 10s
+
+  mesos-slave:
+    container_name: mesos-slave
+    image: mesosphere/mesos-slave:1.5.0
+    privileged: true
+    environment:
+      - MESOS_HOSTNAME=$HOST_IP_ADDR
+      - MESOS_PORT=5151
+      - MESOS_MASTER=zk://zookeeper:2181/mesos
+      - MESOS_WORK_DIR=/var/lib/mesos
+      - MESOS_SYSTEMD_ENABLE_SUPPORT=false
+      - MESOS_CONTAINERIZERS=docker,mesos
+      - MESOS_EXECUTOR_REGISTRATION_TIMEOUT=5mins
+    links:
+      - zookeeper
+      - mesos-master
+    ports:
+      - 5151:5151
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+#    healthcheck:
+#      test: ???
+#      start_period: 10s
+
+  marathon:
+    container_name: marathon
+    image: mesosphere/marathon:v1.5.9
+    environment:
+      - MARATHON_HOSTNAME=$HOST_IP_ADDR
+      - MARATHON_HTTP_PORT=8090
+      - MARATHON_MASTER=zk://zookeeper:2181/mesos
+      - MARATHON_ZK=zk://zookeeper:2181/marathon
+    links:
+      - zookeeper
+      - mesos-master
+    ports:
+      - 8090:8090
+#    healthcheck:
+#      test: ???
+#      start_period: 10s
+
+  mysql-keycloak:
+    container_name: mysql-keycloak
+    image: mysql:5.7.22
+    ports:
+      - 3306:3306
+    environment:
+      - MYSQL_DATABASE=keycloak
+      - MYSQL_ROOT_PASSWORD=secret
+      - MYSQL_USER=keycloak
+      - MYSQL_PASSWORD=password
+#    healthcheck:
+#      test: ???
+#      start_period: 10s
+     
+  ldap-service:
+    container_name: ldap-service
+    image: osixia/openldap:1.2.1
+    environment:
+      - LDAP_ORGANISATION="MyCompany Inc."
+      - LDAP_DOMAIN=mycompany.com
+    ports:
+      - 389:389
+#    healthcheck:
+#      test: ???
+#      start_period: 10s
+
+  phpldapadmin-service:
+    container_name: phpldapadmin-service
+    image: osixia/phpldapadmin:0.7.1
+    environment:
+      - PHPLDAPADMIN_LDAP_HOSTS=ldap-host
+    ports:
+      - 6443:443
+    depends_on:
+      - ldap-service
+    links:
+      - ldap-service:ldap-host
+#    healthcheck:
+#      test: ???
+#      start_period: 10s

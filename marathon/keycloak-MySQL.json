@@ -1,0 +1,39 @@
+{
+	"id": "keycloak",
+	"cmd": null,
+	"args": [],
+	"container": {
+		"type": "DOCKER",
+		"docker": {
+			"image": "jboss/keycloak:4.0.0.Beta1",
+			"network": "BRIDGE",
+			"portMappings": [
+				{
+					"containerPort": 8080,
+					"hostPort": 0
+				}
+			]
+		}
+	},
+	"cpus": 0.2,
+	"mem": 1024,
+	"instances": 1,
+	"env": {
+        "KEYCLOAK_USER": "admin",
+        "KEYCLOAK_PASSWORD": "admin",
+        "MYSQL_ADDR": "127.0.0.1",
+        "MYSQL_PORT": "3306",
+        "MYSQL_ROOT_PASSWORD": "root_password"
+	},
+	"healthChecks": [
+		{
+			"protocol": "COMMAND",
+			"command": {
+				"value": "curl -sf --max-time 10 -o /dev/stdout http://localhost:8080/auth/"
+			},
+			"maxConsecutiveFailures": 3,
+			"gracePeriodSeconds": 360,
+			"intervalSeconds": 40
+		}
+	]
+}
