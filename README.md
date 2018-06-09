@@ -2,28 +2,34 @@
 
 ## Goal
 
-The goal of this project is to create a simple REST API (`simple-service`) and secure it with `Keycloak`,
-whose users will be loaded from `OpenLDAP` server. Furthermore, we will start `Mesos` and `Marathon`, so that
-we can deploy `Keycloak` and `simple-service`.
+The goal of this project is to create a simple REST API (`simple-service`) and secure it with [`Keycloak`](https://www.keycloak.org),
+whose users will be loaded from [`OpenLDAP`](https://www.openldap.org) server. Furthermore, we will start [`Mesos`](http://mesos.apache.org/)
+and [`Marathon`](https://mesosphere.github.io/marathon), so that we can deploy `Keycloak` and `simple-service`.
 
 ## Start Environment
 
-1. Export the machine ip address to `HOST_IP_ADDR` environment variable.
+1. Open a terminal
+
+2. Export the machine ip address to `HOST_IP_ADDR` environment variable.
 > It can be obtained by executing `ifconfig` command on Mac/Linux terminal or `ipconfig` on Windows;
 ```
 export HOST_IP_ADDR=...
 ```
 
-2. Excecute the following command
+3. Inside `/sprinboot-mesos-marathon-keycloak-openldap` root folder, run the following command
 ```
 docker-compose up -d
 ```
+> To stop and remove containers, networks, images, and volumes type:
+> ```
+> docker-compose down
+> ```
 
-## Deploy `Keycloak` to `Marathon`
+## Deploy Keycloak to Marathon
 
 1. Update the property `env.MYSQL_ADDR` that is present in `marathon/keycloak-MySQL.json`, informing machine ip address (`echo $HOST_IP_ADDR`).
 
-2. In `sprinboot-mesos-marathon-keycloak-openldap` root folder, run
+2. In `/sprinboot-mesos-marathon-keycloak-openldap` root folder, run
 ```
 curl -X POST \
   -H "Content-type: application/json" \
@@ -43,9 +49,9 @@ curl -X POST \
 export KEYCLOAK_ADDR=...
 ```
 
-## Build `simple-service` Docker Image
+## Build simple-service Docker Image
 
-In `sprinboot-mesos-marathon-keycloak-openldap` root folder, run
+In `/sprinboot-mesos-marathon-keycloak-openldap` root folder, run
 ```
 mvn clean package docker:build
 ```
@@ -77,11 +83,11 @@ Response Body: It is public.
 docker stop test-image
 ```
 
-## Configure `OpenLDAP`
+## Configure OpenLDAP
 
 Please, see https://github.com/ivangfr/springboot-keycloak-openldap#configuring-ldap
 
-## Configure `Keycloak`
+## Configure Keycloak
 
 1. To open `Keycloak UI`, access the link
 ```
@@ -91,7 +97,7 @@ OR you can open it using `Marathon UI`.
 
 2. The next steps about configuring `Keycloak` can be seen at https://github.com/ivangfr/springboot-keycloak-openldap#configuring-keycloak
 
-## Deploy `simple-service` to `Marathon`
+## Deploy simple-service to Marathon
 
 1. Update the property `env.keycloak.auth-server-url` that is present in `marathon/simple-service.json`, informing `Keycloak` ip address and port (`echo $KEYCLOAK_ADDR`).
 
@@ -109,7 +115,7 @@ curl -X POST http://localhost:8090/v2/apps \
 export SIMPLE_SERVICE_ADDR=...
 ```
 
-## Testing `simple-service` using cURL
+## Testing simple-service using cURL
 
 1. Try to access `GET /api/public` endpoint
 ```
