@@ -5,7 +5,7 @@
 	"container": {
 		"type": "DOCKER",
 		"docker": {
-			"image": "jboss/keycloak:4.0.0.Beta1",
+			"image": "jboss/keycloak:4.0.0.Final",
 			"network": "BRIDGE",
 			"portMappings": [
 				{
@@ -21,9 +21,8 @@
 	"env": {
         "KEYCLOAK_USER": "admin",
         "KEYCLOAK_PASSWORD": "admin",
-        "MYSQL_ADDR": "127.0.0.1",
-        "MYSQL_PORT": "3306",
-        "MYSQL_ROOT_PASSWORD": "root_password"
+		"DB_VENDOR": "mysql",
+        "DB_ADDR": "127.0.0.1"
 	},
 	"healthChecks": [
 		{
