@@ -2,17 +2,19 @@ version: '3.5'
 services:
 
   zookeeper:
+    image: confluentinc/cp-zookeeper:5.0.0
     container_name: zookeeper
-    image: zookeeper:3.5
     ports:
-      - 2181:2181
+    - 2181:2181
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
     healthcheck:
-      test: "nc -z -v localhost 2181"
+      test: "echo stat | nc localhost $$ZOOKEEPER_CLIENT_PORT"
       start_period: 10s
   
   mesos-master:
     container_name: mesos-master
-    image: mesosphere/mesos-master:1.5.0
+    image: mesosphere/mesos-master:1.5.0 #1.7.0 <- It doesn't keep the containers running
     privileged: true
     environment:
       - MESOS_HOSTNAME=$HOST_IP_ADDR
@@ -30,7 +32,7 @@ services:
 
   mesos-slave:
     container_name: mesos-slave
-    image: mesosphere/mesos-slave:1.5.0
+    image: mesosphere/mesos-slave:1.5.0 #1.7.0 <- It doesn't keep the containers running
     privileged: true
     environment:
       - MESOS_HOSTNAME=$HOST_IP_ADDR
@@ -53,7 +55,7 @@ services:
 
   marathon:
     container_name: marathon
-    image: mesosphere/marathon:v1.5.9
+    image: mesosphere/marathon:v1.5.9 #v1.7.181 <- It doesn't keep the containers running
     environment:
       - MARATHON_HOSTNAME=$HOST_IP_ADDR
       - MARATHON_HTTP_PORT=8090
@@ -70,7 +72,7 @@ services:
 
   mysql-keycloak:
     container_name: mysql-keycloak
-    image: mysql:5.7.22
+    image: mysql:5.7.24 #8.0.13 <- At least Keycloak 4.0.4.Final doesn't work with MySQL 8
     ports:
       - 3306:3306
     environment:
@@ -84,7 +86,7 @@ services:
      
   ldap-service:
     container_name: ldap-service
-    image: osixia/openldap:1.2.1
+    image: osixia/openldap:1.2.2
     environment:
       - LDAP_ORGANISATION="MyCompany Inc."
       - LDAP_DOMAIN=mycompany.com
@@ -96,7 +98,7 @@ services:
 
   phpldapadmin-service:
     container_name: phpldapadmin-service
-    image: osixia/phpldapadmin:0.7.1
+    image: osixia/phpldapadmin:0.7.2
     environment:
       - PHPLDAPADMIN_LDAP_HOSTS=ldap-host
     ports:

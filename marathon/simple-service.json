@@ -25,7 +25,7 @@
 		{
 			"protocol": "COMMAND",
 			"command": {
-				"value": "wget -O- --save-headers --content-on-error --timeout=60 http://localhost:8080/health"
+				"value": "wget -O- --save-headers --content-on-error --timeout=60 http://localhost:8080/actuator/health"
 			},
 			"maxConsecutiveFailures": 3,
 			"gracePeriodSeconds": 360,

@@ -1,12 +1,18 @@
 spring:
   application:
     name: simple-service
+
 management:
-  security.enabled: false
-endpoints:
-  beans.sensitive: false
+  security:
+    enabled: false
+  endpoints:
+    web.exposure.include: "*"
+  endpoint:
+    health:
+      show-details: always
+
 keycloak:
-  auth-server-url: http://192.168.1.206:31542/auth
+  auth-server-url: http://127.0.0.1:30000/auth
   realm: company-services
   resource: simple-service
   ssl-required: external
