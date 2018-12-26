@@ -5,13 +5,13 @@ services:
     image: confluentinc/cp-zookeeper:5.0.0
     container_name: zookeeper
     ports:
-    - 2181:2181
+      - 2181:2181
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
     healthcheck:
       test: "echo stat | nc localhost $$ZOOKEEPER_CLIENT_PORT"
       start_period: 10s
-  
+
   mesos-master:
     container_name: mesos-master
     image: mesosphere/mesos-master:1.5.0 #1.7.0 <- It doesn't keep the containers running
@@ -22,7 +22,7 @@ services:
       - MESOS_QUORUM=1
       - MESOS_ZK=zk://zookeeper:2181/mesos
       - MESOS_LOG_DIR=/tmp/mesos/logs
-    links:
+    depends_on:
       - zookeeper
     ports:
       - 5050:5050
@@ -42,7 +42,7 @@ services:
       - MESOS_SYSTEMD_ENABLE_SUPPORT=false
       - MESOS_CONTAINERIZERS=docker,mesos
       - MESOS_EXECUTOR_REGISTRATION_TIMEOUT=5mins
-    links:
+    depends_on:
       - zookeeper
       - mesos-master
     ports:
@@ -55,13 +55,13 @@ services:
 
   marathon:
     container_name: marathon
-    image: mesosphere/marathon:v1.5.9 #v1.7.181 <- It doesn't keep the containers running
+    image: mesosphere/marathon:v1.5.12 #v1.7.181 <- It doesn't keep the containers running
     environment:
       - MARATHON_HOSTNAME=$HOST_IP_ADDR
       - MARATHON_HTTP_PORT=8090
       - MARATHON_MASTER=zk://zookeeper:2181/mesos
       - MARATHON_ZK=zk://zookeeper:2181/marathon
-    links:
+    depends_on:
       - zookeeper
       - mesos-master
     ports:
@@ -83,9 +83,9 @@ services:
     healthcheck:
       test: "mysqladmin ping -u root -p$${MYSQL_ROOT_PASSWORD}"
       start_period: 10s
-     
-  ldap-service:
-    container_name: ldap-service
+
+  ldap-host:
+    container_name: ldap-host
     image: osixia/openldap:1.2.2
     environment:
       - LDAP_ORGANISATION="MyCompany Inc."
@@ -104,9 +104,7 @@ services:
     ports:
       - 6443:443
     depends_on:
-      - ldap-service
-    links:
-      - ldap-service:ldap-host
+      - ldap-host
 #    healthcheck:
 #      test: ???
 #      start_period: 10s

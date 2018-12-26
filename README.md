@@ -28,14 +28,11 @@ docker-compose up -d
 
 ## Deploy Keycloak to Marathon
 
-1. Update the property `env.MYSQL_ADDR` that is present in `marathon/keycloak-MySQL.json`, informing machine ip address
-(`echo $HOST_IP_ADDR`).
-
-2. In `/sprinboot-mesos-marathon-keycloak-openldap` root folder, run
+1. In `/sprinboot-mesos-marathon-keycloak-openldap` root folder, run
 ```
 curl -X POST \
   -H "Content-type: application/json" \
-  -d @./marathon/keycloak-MySQL.json \
+  -d @./marathon/keycloak.json \
   http://localhost:8090/v2/apps
 ```
 
@@ -51,7 +48,7 @@ curl -X POST \
 
 5. Export to `KEYCLOAK_ADDR` environment variable the ip address and port provided by `Marathon` to `Keycloak`
 ```
-export KEYCLOAK_ADDR=...
+export KEYCLOAK_ADDR="$(curl -s http://localhost:8090/v2/apps/keycloak | jq -r '.app.tasks[0].host'):$(curl -s http://localhost:8090/v2/apps/keycloak | jq '.app.tasks[0].ports[0]')"
 ```
 
 ## Build simple-service Docker Image
@@ -79,8 +76,8 @@ curl -i http://localhost:8080/api/public
 
 It will return:
 ```
-Code: 200
-Response Body: It is public.
+HTTP/1.1 200
+It is public.
 ```
 
 3. Stop container
@@ -88,15 +85,15 @@ Response Body: It is public.
 docker stop test-image
 ```
 
-## Configure OpenLDAP
+## Import OpenLDAP Users
 
-Please, see https://github.com/ivangfr/springboot-keycloak-openldap#configuring-ldap
+Please, see https://github.com/ivangfr/springboot-keycloak-openldap#import-openldap-users
 
 ## Configure Keycloak
 
 1. To open `Keycloak UI`, access the link
 ```
-http://$KEYCLOAK_ADDR
+echo "http://$KEYCLOAK_ADDR"
 ```
 OR you can open it using `Marathon UI`.
 
@@ -120,9 +117,10 @@ The figure bellow shows `keycloak` and `simple-service` running on `Marathon`
 
 ![marathon](images/marathon.png)
 
-4. Export to `SIMPLE_SERVICE_ADDR` environment variable the ip address and port provided by `Marathon` to `simple-service` application.
+4. Export to `SIMPLE_SERVICE_ADDR` environment variable the ip address and port provided by `Marathon` to
+`simple-service` application.
 ```
-export SIMPLE_SERVICE_ADDR=...
+export SIMPLE_SERVICE_ADDR="$(curl -s http://localhost:8090/v2/apps/simple-service | jq -r '.app.tasks[0].host'):$(curl -s http://localhost:8090/v2/apps/simple-service | jq '.app.tasks[0].ports[0]')"
 ```
 
 ## Testing simple-service using cURL
@@ -134,8 +132,8 @@ curl -i "http://$SIMPLE_SERVICE_ADDR/api/public"
 
 It will return:
 ```
-Code: 200
-Response Body: It is public.
+HTTP/1.1 200
+It is public.
 ```
 
 2. Access `GET /api/private` endpoint (without authentication)
@@ -145,12 +143,13 @@ curl -i "http://$SIMPLE_SERVICE_ADDR/api/private"
 
 It will return:
 ```
-Code: 302
+HTTP/1.1 302
 ```
 
 Here, the application is trying to redirect the request to an authentication link.
 
-3. Export to `SIMPLESERVICE_CLIENT_SECRET` environment variable the _Client Secret_ created by `Keycloak` to `simple-service`. This secret was generated while configuring `Keycloak`.
+3. Export to `SIMPLESERVICE_CLIENT_SECRET` environment variable the _Client Secret_ created by `Keycloak` to
+`simple-service`. This secret was generated while configuring `Keycloak`.
 ```
 export SIMPLE_SERVICE_CLIENT_SECRET=...
 ```
@@ -174,6 +173,6 @@ curl -i -H "Authorization: Bearer $BGATES_ACCESS_TOKEN" "http://$SIMPLE_SERVICE_
 
 It will return:
 ```
-Code: 200
-Response Body: bgates, it is private.
+HTTP/1.1 200
+bgates, it is private.
 ```
