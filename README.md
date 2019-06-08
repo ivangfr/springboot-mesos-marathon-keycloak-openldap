@@ -28,10 +28,6 @@ export HOST_IP_ADDR=...
 ```
 docker-compose up -d
 ```
-> To stop and remove containers, networks and volumes, run
-> ```
-> docker-compose down -v
-> ```
 
 - Wait a little bit until `zookeeper`, `mysql-keycloak` and `mesos-master` containers are Up (healthy)
 
@@ -278,6 +274,17 @@ It will return:
 ```
 HTTP/1.1 200
 bgates, it is private.
+```
+
+## Shutdown
+
+- Go to `Marathon` and click on `keycloak` application;
+- On the next page, click on the gear symbol and then on `Destroy`;
+- Confirm the destroy of the application;
+- Do the same for `simple-service` application;
+- After that, go to a terminal and run
+```
+docker-compose down -v
 ```
 
 ## Issues
