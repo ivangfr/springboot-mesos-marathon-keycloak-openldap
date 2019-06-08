@@ -2,15 +2,15 @@ version: '3.5'
 services:
 
   zookeeper:
-    image: confluentinc/cp-zookeeper:5.0.0
+    image: confluentinc/cp-zookeeper:5.1.0
     container_name: zookeeper
     ports:
-      - 2181:2181
+      - "2181:2181"
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
     healthcheck:
       test: "echo stat | nc localhost $$ZOOKEEPER_CLIENT_PORT"
-      start_period: 10s
+      start_period: 20s
 
   mesos-master:
     container_name: mesos-master
@@ -25,10 +25,10 @@ services:
     depends_on:
       - zookeeper
     ports:
-      - 5050:5050
+      - "5050:5050"
     healthcheck:
       test: "curl -f http://localhost:5050/health || exit 1"
-      start_period: 10s
+      start_period: 20s
 
   mesos-slave:
     container_name: mesos-slave
@@ -46,12 +46,12 @@ services:
       - zookeeper
       - mesos-master
     ports:
-      - 5151:5151
+      - "5151:5151"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
 #    healthcheck:
 #      test: ???
-#      start_period: 10s
+#      start_period: 20s
 
   marathon:
     container_name: marathon
@@ -65,14 +65,14 @@ services:
       - zookeeper
       - mesos-master
     ports:
-      - 8090:8090
+      - "8090:8090"
 #    healthcheck:
 #      test: ???
-#      start_period: 10s
+#      start_period: 20s
 
   mysql-keycloak:
     container_name: mysql-keycloak
-    image: mysql:5.7.24 #8.0.13 <- At least Keycloak 4.0.4.Final doesn't work with MySQL 8
+    image: mysql:5.7.26
     ports:
       - 3306:3306
     environment:
@@ -86,25 +86,12 @@ services:
 
   ldap-host:
     container_name: ldap-host
-    image: osixia/openldap:1.2.2
+    image: osixia/openldap:1.2.4
     environment:
       - LDAP_ORGANISATION="MyCompany Inc."
       - LDAP_DOMAIN=mycompany.com
     ports:
-      - 389:389
+      - "389:389"
 #    healthcheck:
 #      test: ???
-#      start_period: 10s
-
-  phpldapadmin-service:
-    container_name: phpldapadmin-service
-    image: osixia/phpldapadmin:0.7.2
-    environment:
-      - PHPLDAPADMIN_LDAP_HOSTS=ldap-host
-    ports:
-      - 6443:443
-    depends_on:
-      - ldap-host
-#    healthcheck:
-#      test: ???
-#      start_period: 10s
+#      start_period: 20s

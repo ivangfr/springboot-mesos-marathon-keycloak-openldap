@@ -30,14 +30,13 @@ public class KeycloakIndicator implements HealthIndicator {
     }
 
     private int check() {
-        int retCode = 0;
         try {
             restTemplate.getForObject(KEYCLOAK_URL, String.class);
         } catch (Exception e) {
             logger.error("Unable to access Keycloak. {}", e.getMessage());
-            retCode = 1;
+            return 1;
         }
-        return retCode;
+        return 0;
     }
 
 }
