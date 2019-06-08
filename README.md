@@ -36,7 +36,7 @@ docker-compose up -d
 docker-compose ps
 ```
 
-### Docker Service Links
+### Link of the Services
 
 | Service    | URL                   |
 | ---------- | --------------------- |
