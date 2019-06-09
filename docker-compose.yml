@@ -92,6 +92,3 @@ services:
       - LDAP_DOMAIN=mycompany.com
     ports:
       - "389:389"
-#    healthcheck:
-#      test: ???
-#      start_period: 20s

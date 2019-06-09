@@ -11,7 +11,7 @@
   "container": {
     "type": "DOCKER",
     "docker": {
-      "image": "jboss/keycloak:5.0.0",
+      "image": "jboss/keycloak:6.0.1",
       "portMappings": [
         {
           "containerPort": 8080,
@@ -28,6 +28,8 @@
     "KEYCLOAK_PASSWORD": "admin",
     "DB_VENDOR": "mysql",
     "DB_ADDR": "mysql-keycloak",
+    "DB_USER": "keycloak",
+    "DB_PASSWORD": "password",
     "JDBC_PARAMS": "useSSL=false"
   },
   "healthChecks": [
