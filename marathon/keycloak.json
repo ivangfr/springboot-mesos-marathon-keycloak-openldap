@@ -34,13 +34,12 @@
   },
   "healthChecks": [
     {
-      "protocol": "COMMAND",
-      "command": {
-        "value": "curl -sf --max-time 10 -o /dev/stdout http://localhost:8080/auth/"
-      },
-      "maxConsecutiveFailures": 3,
-      "gracePeriodSeconds": 360,
-      "intervalSeconds": 40
+      "protocol": "HTTP",
+      "port": 8080,
+      "path": "/auth",
+      "maxConsecutiveFailures": 5,
+      "gracePeriodSeconds": 300,
+      "intervalSeconds": 60
     }
   ]
 }

@@ -1,51 +1,48 @@
 # `springboot-mesos-marathon-keycloak-openldap`
 
-The goal of this project is to create a simple REST API, called `simple-service`, and secure it with
-[`Keycloak`](https://www.keycloak.org). The API users will be loaded from [`OpenLDAP`](https://www.openldap.org) server.
-Furthermore, we will start [`Mesos`](http://mesos.apache.org/) / [`Marathon`](https://mesosphere.github.io/marathon)
+The goal of this project is to create a simple [`Spring Boot`](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/)
+REST API, called `simple-service`, and secure it with [`Keycloak`](https://www.keycloak.org). The API users will be
+loaded from [`OpenLDAP`](https://www.openldap.org) server. Furthermore, we will start [`Mesos`](http://mesos.apache.org/) / [`Marathon`](https://mesosphere.github.io/marathon)
 environment, so that we can deploy `Keycloak` and `simple-service` in it.
 
-## Microservice
+## Application
 
 ### simple-service
 
-Spring-Boot Java Web application that exposes two endpoints:
+`Spring Boot` Java Web application that exposes two endpoints:
 - `/api/public`: endpoint that can be access by anyone, it is not secured;
 - `/api/private`: endpoint that can just be accessed by users that provides a `JWT` token issued by `Keycloak` and the
 token must contain the role `USER`.
 
 ## Start Environment
 
-- Open a terminal
-
-- Export the machine ip address to `HOST_IP_ADDR` environment variable.
-> It can be obtained by executing `ifconfig` command on Mac/Linux terminal or `ipconfig` on Windows.
+Open a terminal and the first thing is to export the machine ip address to `HOST_IP_ADDR` environment variable. It can
+be obtained by executing `ifconfig` command on Mac/Linux terminal or `ipconfig` on Windows.
 ```
 export HOST_IP_ADDR=...
 ```
 
-- Inside `springboot-mesos-marathon-keycloak-openldap` root folder, run the following command
+Then, inside `springboot-mesos-marathon-keycloak-openldap` root folder, run the following command
 ```
 docker-compose up -d
 ```
 
-- Wait a little bit until `zookeeper`, `mysql-keycloak` and `mesos-master` containers are Up (healthy)
-
-- In order to check the status of the containers run the command
+Wait a little bit until `zookeeper`, `mysql-keycloak` and `mesos-master` containers are Up (healthy). In order to check
+it, run the following command
 ```
 docker-compose ps
 ```
 
-### Link of the Services
+### Services URLs
 
-| Service    | URL                   |
-| ---------- | --------------------- |
-| `Mesos`    | http://localhost:5050 |
-| `Marathon` | http://localhost:8090 |
+| Service  | URL                   |
+| -------- | --------------------- |
+| Mesos    | http://localhost:5050 |
+| Marathon | http://localhost:8090 |
 
 ## Deploy Keycloak to Marathon
 
-- In `springboot-mesos-marathon-keycloak-openldap` root folder, run
+In a terminal and inside `springboot-mesos-marathon-keycloak-openldap` root folder, run
 ```
 curl -X POST \
   -H "Content-type: application/json" \
@@ -53,9 +50,9 @@ curl -X POST \
   http://localhost:8090/v2/apps
 ```
 
-- Open `Marathon`(http://localhost:8090) and wait for `Keycloak` to be healthy.
+Open [`Marathon`](http://localhost:8090) and wait for `Keycloak` to be healthy.
 
-- You can monitor `Keycloak` deployment logs on `Mesos`(http://localhost:5050)
+You can monitor `Keycloak` deployment logs on [`Mesos`](http://localhost:5050)
 
 ![mesos](images/mesos.png)
 
@@ -63,7 +60,7 @@ curl -X POST \
 > - Then, click on `stdout`.
 > - A window will open and the logs will be displayed real-time.
 
-- Export to `KEYCLOAK_ADDR` environment variable the ip address and port provided by `Marathon` to `Keycloak`
+Finally, export to `KEYCLOAK_ADDR` environment variable the ip address and port provided by `Marathon` to `Keycloak`
 ```
 export KEYCLOAK_ADDR="$(curl -s http://localhost:8090/v2/apps/keycloak | jq -r '.app.tasks[0].host'):$(curl -s http://localhost:8090/v2/apps/keycloak | jq '.app.tasks[0].ports[0]')"
 echo $KEYCLOAK_ADDR
@@ -76,9 +73,9 @@ In `springboot-mesos-marathon-keycloak-openldap` root folder, run
 ./mvnw clean package dockerfile:build -DskipTests --projects simple-service
 ```
 
-### Test Docker Image
+### Test simple-service Docker Image
 
-- Start container
+You can start a `simple-service` container by running the following command
 ```
 docker run --rm -d \
   --name simple-service \
@@ -87,23 +84,23 @@ docker run --rm -d \
   docker.mycompany.com/simple-service:1.0.0
 ```
 
-- To see the startup logs of `simple-service`, run the following command
+In order to see the startup logs, run the command below
 ```
 docker logs simple-service -f
 ```
 
-- Test `GET /api/public` endpoint
+Once the service is up, you can use `curl` to test the public endpoint
 ```
 curl -i http://localhost:8080/api/public
 ```
 
-It will return:
+It will return
 ```
 HTTP/1.1 200
 It is public.
 ```
 
-- Stop container
+To stop container run
 ```
 docker stop simple-service
 ```
@@ -132,13 +129,13 @@ To import those users to `OpenLDAP` run the following script
 
 ### Login
 
-- To open `Keycloak UI`, access the link printed from the echo command below
+To open `Keycloak UI`, access the link printed from the echo command below
 ```
 echo "http://$KEYCLOAK_ADDR"
 ```
 OR you can open it using `Marathon UI`.
 
-- Login with the credentials
+The `Keycloak UI` credentials
 ```
 Username: admin
 Password: admin
@@ -198,25 +195,24 @@ Password: admin
 
 ## Deploy simple-service to Marathon
 
-- Update the property `env.keycloak.auth-server-url` that is present in `marathon/simple-service.json`, informing
+First, update the property `env.keycloak.auth-server-url` that is present in `marathon/simple-service.json`, informing
 `Keycloak` ip address and port (`echo $KEYCLOAK_ADDR`).
 
-- Run the `curl` command
+Then, run the following `curl` command
 ```
 curl -X POST http://localhost:8090/v2/apps \
   -H "Content-type: application/json" \
   -d @./marathon/simple-service.json
 ```
 
-- Open `Marathon UI`(http://localhost:8090) and wait for `simple-service` to be healthy.
-
-- You can monitor `simple-service` deployment logs on `Mesos`(http://localhost:5050)
+Open [`Marathon`](http://localhost:8090) and wait for `simple-service` to be healthy. You can monitor `simple-service`
+deployment logs on [`Mesos`](http://localhost:5050)
 
 The figure below shows `keycloak` and `simple-service` running on `Marathon`
 
 ![marathon](images/marathon.png)
 
-- Export to `SIMPLE_SERVICE_ADDR` environment variable the ip address and port provided by `Marathon` to
+Export to `SIMPLE_SERVICE_ADDR` environment variable the ip address and port provided by `Marathon` to
 `simple-service` application.
 ```
 export SIMPLE_SERVICE_ADDR="$(curl -s http://localhost:8090/v2/apps/simple-service | jq -r '.app.tasks[0].host'):$(curl -s http://localhost:8090/v2/apps/simple-service | jq '.app.tasks[0].ports[0]')"
@@ -225,7 +221,7 @@ echo $SIMPLE_SERVICE_ADDR
 
 ## Testing simple-service
 
-- Try to access `GET /api/public` endpoint
+Try to access `GET /api/public` endpoint
 ```
 curl -i "http://$SIMPLE_SERVICE_ADDR/api/public"
 ```
@@ -236,7 +232,7 @@ HTTP/1.1 200
 It is public.
 ```
 
-- Access `GET /api/private` endpoint (without authentication)
+Access `GET /api/private` endpoint (without authentication)
 ```
 curl -i "http://$SIMPLE_SERVICE_ADDR/api/private"
 ```
@@ -247,13 +243,13 @@ HTTP/1.1 302
 ```
 > Here, the application is trying to redirect the request to an authentication link.
 
-- Export to `SIMPLE_SERVICE_CLIENT_SECRET` environment variable the `Client Secret` created by `Keycloak` to
-`simple-service`. This secret was generated while configuring the client in `Keycloak`.
+Export to `SIMPLE_SERVICE_CLIENT_SECRET` environment variable the `Client Secret` created by `Keycloak` to
+`simple-service`. This secret was generated at `Configuring Keycloak` > [`Create a new Client`](https://github.com/ivangfr/springboot-mesos-marathon-keycloak-openldap#create-a-new-client).
 ```
 export SIMPLE_SERVICE_CLIENT_SECRET=...
 ```
 
-- Get `bgates` access token
+Get `bgates` access token
 ```
 BGATES_ACCESS_TOKEN=$(curl -s -X POST \
   "http://$KEYCLOAK_ADDR/auth/realms/company-services/protocol/openid-connect/token" \
@@ -265,7 +261,7 @@ BGATES_ACCESS_TOKEN=$(curl -s -X POST \
   -d "client_id=simple-service" | jq -r .access_token)
 ```
 
-- Access `GET /api/private` endpoint this time, informing the access token
+Access `GET /api/private` endpoint this time, informing the access token
 ```
 curl -i -H "Authorization: Bearer $BGATES_ACCESS_TOKEN" "http://$SIMPLE_SERVICE_ADDR/api/private"
 ```

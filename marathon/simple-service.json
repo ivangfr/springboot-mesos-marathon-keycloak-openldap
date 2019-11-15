@@ -24,16 +24,16 @@
   "mem": 1024,
   "instances": 1,
   "env": {
-    "keycloak.auth-server-url": "http://127.0.0.1:30000/auth"
+    "keycloak.auth-server-url": "http://192.168.1.6:31478/auth"
   },
   "healthChecks": [
     {
       "protocol": "HTTP",
       "port": 8080,
       "path": "/actuator/health",
-      "maxConsecutiveFailures": 3,
-      "gracePeriodSeconds": 360,
-      "intervalSeconds": 40
+      "maxConsecutiveFailures": 5,
+      "gracePeriodSeconds": 300,
+      "intervalSeconds": 60
     }
   ]
 }

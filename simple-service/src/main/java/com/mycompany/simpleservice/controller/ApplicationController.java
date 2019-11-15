@@ -17,7 +17,7 @@ public class ApplicationController {
 
     @GetMapping("/private")
     public String getPrivateString(Principal principal) {
-        return String.format("%s, it is private.\n", principal.getName());
+        return principal.getName() + ", it is private.\n";
     }
 
 }
