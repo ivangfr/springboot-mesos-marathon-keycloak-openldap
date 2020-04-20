@@ -1,24 +1,24 @@
 package com.mycompany.simpleservice.config;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
+@Slf4j
 @Component
 public class KeycloakIndicator implements HealthIndicator {
 
-    private final Logger logger = LoggerFactory.getLogger(getClass());
-
     @Value("${keycloak.auth-server-url}")
-    private String KEYCLOAK_URL;
+    private String keycloakUrl;
 
-    @Autowired
-    private RestTemplate restTemplate;
+    private final RestTemplate restTemplate;
+
+    public KeycloakIndicator(RestTemplate restTemplate) {
+        this.restTemplate = restTemplate;
+    }
 
     @Override
     public Health health() {
@@ -31,9 +31,9 @@ public class KeycloakIndicator implements HealthIndicator {
 
     private int check() {
         try {
-            restTemplate.getForObject(KEYCLOAK_URL, String.class);
+            restTemplate.getForObject(keycloakUrl, String.class);
         } catch (Exception e) {
-            logger.error("Unable to access Keycloak. {}", e.getMessage());
+            log.error("Unable to access Keycloak at {}. {}", keycloakUrl, e.getMessage());
             return 1;
         }
         return 0;

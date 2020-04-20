@@ -11,20 +11,20 @@
   "container": {
     "type": "DOCKER",
     "docker": {
-      "image": "docker.mycompany.com/simple-service:1.0.0",
-      "portMappings": [
-        {
-          "containerPort": 8080,
-          "hostPort": 0
-        }
-      ]
-    }
+      "image": "docker.mycompany.com/simple-service:1.0.0"
+    },
+    "portMappings": [
+      {
+        "containerPort": 8080,
+        "hostPort": 0
+      }
+    ]
   },
   "cpus": 0.2,
   "mem": 1024,
   "instances": 1,
   "env": {
-    "keycloak.auth-server-url": "http://192.168.1.6:31478/auth"
+    "keycloak.auth-server-url": "http://127.0.0.1:8080/auth"
   },
   "healthChecks": [
     {

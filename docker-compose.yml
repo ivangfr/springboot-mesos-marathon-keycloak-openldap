@@ -2,7 +2,7 @@ version: '3.7'
 services:
 
   zookeeper:
-    image: confluentinc/cp-zookeeper:5.3.1
+    image: confluentinc/cp-zookeeper:5.4.1
     container_name: zookeeper
     ports:
       - "2181:2181"
@@ -73,7 +73,7 @@ services:
 
   mysql-keycloak:
     container_name: mysql-keycloak
-    image: mysql:5.7.28
+    image: mysql:5.7.29
     ports:
       - 3306:3306
     environment:
