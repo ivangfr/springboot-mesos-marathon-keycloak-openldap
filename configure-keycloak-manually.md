@@ -12,7 +12,7 @@
      ```
      KEYCLOAK_ADDR="$(curl -s http://localhost:8090/v2/apps/keycloak | jq -r '.app.tasks[0].host'):$(curl -s http://localhost:8090/v2/apps/keycloak | jq '.app.tasks[0].ports[0]')"
 
-     echo "http://$KEYCLOAK_ADDR"
+     echo "http://$KEYCLOAK_ADDR/auth/admin/"
      ```
   1. Using [`Marathon`](http://localhost:8090)
 
@@ -33,10 +33,9 @@
 - Click `Create` button.
 - On `Client ID` field type `simple-service`.
 - Click on `Save`.
-- On `Settings` tab, set the `Access Type` to `confidential`.
-- Still on `Settings` tab, set the `Valid Redirect URIs` to `http://localhost:8080`.
+- On the `Settings` tab, set the `Valid Redirect URIs` to `http://localhost:9080/*`. (just because it is mandatory as this field is not important for this example)
+- On `Advanced Settings`, in `Proof Key for Code Exchange Code Challenge Method` set `S256`.
 - Click on `Save`.
-- Go to `Credentials` tab. Copy the value on `Secret` field. It will be used on the next steps.
 - Go to `Roles` tab.
 - Click `Add Role` button.
 - On `Role Name` type `USER`.
@@ -59,11 +58,12 @@
 
 ### Configure users imported
 
-- Click on `Users` menu on the left.
-- Click on `View all users`. 3 users will be shown.
-- Edit user `bgates`.
-- Go to `Role Mappings` tab.
-- Select `simple-service` on the combo-box `Client Roles`.
-- Add the role `USER` to `bgates`.
-- Do the same for the user `sjobs`.
-- Let's leave `mcuban` without `USER` role.
+- Click on `Users` menu on the left
+- Click on `View all users`. 3 users will be shown
+- Edit user `bgates`
+- Go to `Role Mappings` tab
+- In the search field `Client Roles`, type `simple-service`. It will appear. Select it
+- Select the role `USER` present in `Available Roles` and click on `Add selected`
+- Done. `bgates` has now the role `USER` as one of his `Assigned Roles`
+- Do the same for the user `sjobs`
+- Let's leave `mcuban` without `USER` role

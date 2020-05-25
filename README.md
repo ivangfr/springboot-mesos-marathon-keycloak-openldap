@@ -59,7 +59,7 @@ To import those users to `OpenLDAP`
 - In a terminal, make sure you are in `springboot-mesos-marathon-keycloak-openldap` root folder
 - Run the following command to build `simple-service` Docker Image
   ```
-  ./mvnw clean package dockerfile:build -DskipTests --projects simple-service
+  ./mvnw clean package dockerfile:build --projects simple-service
   ```
 
 ## Deploy Keycloak to Marathon
@@ -108,8 +108,6 @@ Keycloak can be configured by running a script or manually. For manual configura
   ./init-keycloak.sh $KEYCLOAK_ADDR
   ```
   This script creates `company-services` realm, `simple-service` client, `USER` client role, `ldap` federation and the users `bgates` and `sjobs` with the role `USER` assigned.
-  
-- Copy `SIMPLE_SERVICE_CLIENT_SECRET` value that is shown at the end of the script. It will be needed whenever we call `Keycloak` to get a token to access `simple-service`
   
 ## Deploy simple-service to Marathon
 
@@ -167,11 +165,6 @@ When `simple-service` is deployed in `Marathon`, it's assigned to it a host and 
   ```
   > Here, the application is trying to redirect the request to an authentication link.
 
-- Create environment variable called `SIMPLE_SERVICE_CLIENT_SECRET` with the `Client Secret` created by `Keycloak` to `simple-service`. This secret was generated at [`Configuring Keycloak`](#configuring-keycloak) section.
-  ```
-  SIMPLE_SERVICE_CLIENT_SECRET=...
-  ```
-
 - Get `bgates` access token
   ```
   BGATES_ACCESS_TOKEN=$(curl -s -X POST \
@@ -180,7 +173,6 @@ When `simple-service` is deployed in `Marathon`, it's assigned to it a host and 
     -d "username=bgates" \
     -d "password=123" \
     -d "grant_type=password" \
-    -d "client_secret=$SIMPLE_SERVICE_CLIENT_SECRET" \
     -d "client_id=simple-service" | jq -r .access_token)
   
   echo $BGATES_ACCESS_TOKEN
@@ -199,7 +191,7 @@ When `simple-service` is deployed in `Marathon`, it's assigned to it a host and 
 ## Shutdown
 
 - Go to `Marathon` and click on `simple-service` application
-- On the next page, click on the gear symbol and then on `Destroy`
+- On the next page, click on the `gear` symbol and then on `Destroy`
 - Confirm the destruction of the application
 - Do the same for `keycloak` application
 - After that, go to a terminal and, inside `springboot-mesos-marathon-keycloak-openldap` root folder, run

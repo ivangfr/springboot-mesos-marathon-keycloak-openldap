@@ -11,7 +11,7 @@
   "container": {
     "type": "DOCKER",
     "docker": {
-      "image": "jboss/keycloak:9.0.2"
+      "image": "jboss/keycloak:9.0.3"
     },
     "portMappings": [
       {
