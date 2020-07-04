@@ -10,6 +10,12 @@ The goal of this project is to create a simple [`Spring Boot`](https://docs.spri
   - `/api/public`: endpoint that can be access by anyone, it is not secured;
   - `/api/private`: endpoint that can just be accessed by users that provides a `JWT` token issued by `Keycloak` and the token must contain the role `USER`.
 
+## Prerequisites
+
+- [`Java 11+`](https://www.oracle.com/java/technologies/javase-jdk11-downloads.html)
+- [`Docker`](https://www.docker.com/)
+- [`Docker-Compose`](https://docs.docker.com/compose/install/)
+
 ## Start Environment
 
 - Open a terminal and make sure you are in `springboot-mesos-marathon-keycloak-openldap` root folder
@@ -29,7 +35,7 @@ The goal of this project is to create a simple [`Spring Boot`](https://docs.spri
   docker-compose ps
   ```
 
-### Services URLs
+## Service's URL
 
 | Service  | URL                   |
 | -------- | --------------------- |
@@ -57,9 +63,10 @@ To import those users to `OpenLDAP`
 ## Build simple-service Docker Image
 
 - In a terminal, make sure you are in `springboot-mesos-marathon-keycloak-openldap` root folder
+
 - Run the following command to build `simple-service` Docker Image
   ```
-  ./mvnw clean package dockerfile:build --projects simple-service
+  ./mvnw clean compile jib:dockerBuild --projects simple-service
   ```
 
 ## Deploy Keycloak to Marathon
@@ -72,9 +79,9 @@ To import those users to `OpenLDAP`
     http://localhost:8090/v2/apps
   ```
 
-- Open [`Marathon`](http://localhost:8090) and wait for `Keycloak` to be healthy
+- Open [`Marathon` website](http://localhost:8090) and wait for `Keycloak` to be healthy
 
-- You can monitor `Keycloak` deployment logs on [`Mesos`](http://localhost:5050)
+- You can monitor `Keycloak` deployment logs on [`Mesos` website](http://localhost:5050)
 
   ![mesos](images/mesos.png)
 
@@ -93,7 +100,7 @@ When `Keycloak` is deployed in `Marathon`, it's assigned to it a host and port. 
    echo $KEYCLOAK_ADDR
    ```
 
-1. Using [`Marathon`](http://localhost:8090)
+1. Using [`Marathon` website](http://localhost:8090)
 
 ## Configuring Keycloak
 
@@ -122,7 +129,7 @@ Keycloak can be configured by running a script or manually. For manual configura
     -d @./marathon/simple-service.json
   ```
 
-- Open [`Marathon`](http://localhost:8090) and wait for `simple-service` to be healthy. You can monitor `simple-service` deployment logs on [`Mesos`](http://localhost:5050)
+- Open [`Marathon` website](http://localhost:8090) and wait for `simple-service` to be healthy. You can monitor `simple-service` deployment logs on [`Mesos` website](http://localhost:5050)
 
 - The figure below shows `keycloak` and `simple-service` running on `Marathon`
 
