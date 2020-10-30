@@ -4,7 +4,7 @@ The goal of this project is to create a simple [`Spring Boot`](https://docs.spri
 
 ## Application
 
-- **simple-service**
+- ### simple-service
 
   `Spring Boot` Java Web application that exposes two endpoints:
   - `/api/public`: endpoint that can be access by anyone, it is not secured;
@@ -15,6 +15,45 @@ The goal of this project is to create a simple [`Spring Boot`](https://docs.spri
 - [`Java 11+`](https://www.oracle.com/java/technologies/javase-jdk11-downloads.html)
 - [`Docker`](https://www.docker.com/)
 - [`Docker-Compose`](https://docs.docker.com/compose/install/)
+
+## Warning: Mac Users
+
+   After some recent `Docker Desktop` updates, we need to add a new directory called `/var/lib` to Docker `File Sharing` resources, otherwise we will see an exception like
+   ```
+   docker: Error response from daemon: Mounts denied: 
+   The path /var/lib/mesos/slaves/347adc13-aad3-4c25-9864-ee2ebcc97572-S0/frameworks/347adc13-aad3-4c25-9864-ee2ebcc97572-0000/executors/keycloak.05642772-1ae3-11eb-aecf-0242ac120007/runs/33e0751e-1a0a-40d8-b9f8-cfa706679172
+   is not shared from OS X and is not known to Docker.
+   You can configure shared paths from Docker -> Preferences... -> File Sharing.
+   See https://docs.docker.com/docker-for-mac/osxfs/#namespaces for more info.
+   ```
+
+   Unfortunately, it's not possible to do it by using `Docker Desktop` UI. So, we need to do it manually by following the next steps:
+   - Open `~/Library/Group\ Containers/group.com.docker/settings.json` using your favorite editor;
+   - At the top of the file you will see an array that looks like this:
+     ```
+     "filesharingDirectories" : [
+       "\/Users",
+       "\/Volumes",
+       "\/private",
+       "\/tmp"
+     ],
+     ```
+   - Append the following line:
+     ```
+     "\/var\/lib"
+     ```
+   - The new array should now look like the one below (mind the comma after `"\/tmp"`):
+     ```
+     "filesharingDirectories" : [
+       "\/Users",
+       "\/Volumes",
+       "\/private",
+       "\/tmp",
+       "\/var\/lib"
+     ],
+     ```
+   - Save the file and exit;
+   - Restart `Docker Desktop`.
 
 ## Start Environment
 
@@ -30,7 +69,7 @@ The goal of this project is to create a simple [`Spring Boot`](https://docs.spri
   docker-compose up -d
   ```
 
-- Wait a little bit until `zookeeper`, `mysql-keycloak` and `mesos-master` containers are Up (healthy). In order to check it run
+- Wait a bit until `zookeeper`, `mysql-keycloak` and `mesos-master` containers are Up (healthy). In order to check it run
   ```
   docker-compose ps
   ```
@@ -201,8 +240,14 @@ When `simple-service` is deployed in `Marathon`, it's assigned to it a host and 
 - On the next page, click on the `gear` symbol and then on `Destroy`
 - Confirm the destruction of the application
 - Do the same for `keycloak` application
+
 - After that, go to a terminal and, inside `springboot-mesos-marathon-keycloak-openldap` root folder, run
   ```
   docker-compose down -v
   docker rm -v $(docker ps -a -f status=exited -f status=created -q)
   ```
+
+- Undo changes on `~/Library/Group\ Containers/group.com.docker/settings.json` file
+  - Open `~/Library/Group\ Containers/group.com.docker/settings.json` using your favorite editor;
+  - Remove `"\/var\/lib"` of the `filesharingDirectories` array present at the top of file;
+  - Restart `Docker Desktop`.

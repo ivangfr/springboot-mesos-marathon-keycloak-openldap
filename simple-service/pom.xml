@@ -15,7 +15,7 @@
     <description>Demo project for Spring Boot</description>
 
     <properties>
-        <keycloak.version>10.0.2</keycloak.version>
+        <keycloak.version>11.0.2</keycloak.version>
     </properties>
 
     <dependencies>

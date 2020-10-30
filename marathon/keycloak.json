@@ -11,7 +11,7 @@
   "container": {
     "type": "DOCKER",
     "docker": {
-      "image": "jboss/keycloak:10.0.2"
+      "image": "jboss/keycloak:11.0.2"
     },
     "portMappings": [
       {
@@ -21,7 +21,7 @@
     ]
   },
   "cpus": 0.2,
-  "mem": 1024,
+  "mem": 256,
   "instances": 1,
   "env": {
     "KEYCLOAK_USER": "admin",
