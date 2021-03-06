@@ -247,7 +247,7 @@ When `simple-service` is deployed in `Marathon`, it's assigned to it a host and 
   docker rm -v $(docker ps -a -f status=exited -f status=created -q)
   ```
 
-- Undo changes on `~/Library/Group\ Containers/group.com.docker/settings.json` file
+- Undo changes in `~/Library/Group\ Containers/group.com.docker/settings.json` file
   - Open `~/Library/Group\ Containers/group.com.docker/settings.json` using your favorite editor;
   - Remove `"\/var\/lib"` of the `filesharingDirectories` array present at the top of file;
   - Restart `Docker Desktop`.
